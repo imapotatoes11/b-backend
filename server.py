@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 import json, time, os, requests
+from log_client import Log
 
 LOCALAUTH = os.environ.get("LOCALAUTH")
 
@@ -9,21 +10,27 @@ if LOCALAUTH is None or LOCALAUTH == "None":
         False, "The environment variable is not active.")
 
 app = Flask(__name__)
+log = Log('142.198.243.59', 1018, log=True)
 
 # Endpoint to handle POST requests and store key-value pairs in a JSON file
 @app.route('/store', methods=['POST'])
 def store_data():
     start = time.time()
+    log.info("POST request received for store")
 
     # Load existing data from the JSON file
+    log.info("DAT > Loading existing data from JSON file")
     existing_data = {}
     try:
         with open('data.json', 'r') as f:
             existing_data = json.load(f)
+            log.info("DAT > FOU > Existing data found, loading into memory...")
     except FileNotFoundError:
-        pass
+        log.info("DAT > NON > No existing data found")
+    log.info("DAT > Existing data loaded")
 
     # Get key-value pair from the request body
+    log.info("KEY > Getting key-value pair from request body and storing data...")
     data = request.get_json()
     key = data.get('key')
     value = data.get('value')
@@ -34,34 +41,50 @@ def store_data():
     # Save the updated data back to the JSON file
     with open('data.json', 'w') as f:
         json.dump(existing_data, f)
+        log.info("KEY > Data stored successfully")
 
     end = time.time()
 
     # repeat the request to locally mirrored server
-    try: requests.post("142.198.243.59:1017", headers = {"Authentication": LOCALAUTH, "Content-Type": "application/json"}, data=data)
-    except: pass
+    log.info("BAC > Repeating request to local server...")
+    try:
+        req = requests.post("142.198.243.59:1017", headers = {"Authentication": LOCALAUTH, "Content-Type": "application/json"}, data=data)
+        if req.status_code == 200:
+            log.info("BAC > POST > SUCC > The data was synced successfully!")
+        else:
+            log.warning(f"BAC > POST > WARN > Data failed to sync, HTTP error {req.status_code}")
+    except Exception as e:
+        log.error(f"BAC > ERR > The request failed: {e}")
 
+    log.info("POST complete! Return message: " + str({'message': 'Data stored successfully.', 'stats': {'response_time': end-start}}))
     return jsonify({'message': 'Data stored successfully.', 'stats': {'response_time': end-start}})
 
 # Endpoint to handle GET requests and retrieve the JSON file
 @app.route('/data', methods=['GET'])
 def get_data():
     start = time.time()
+    log.info("GET request received for data")
     try:
+        log.info("RET > Attempting to retrieve data...")
         with open('data.json', 'r') as f:
             data = json.load(f)
             end = time.time()
-            #append stats to data
+            # append stats to data
             data['stats'] = {'response_time': end-start}
+            log.info(f"RET > SUCC > Data retrieval success! Response time was {round(end-start,3)} seconds")
             return jsonify(data)
     except FileNotFoundError:
         end = time.time()
+        log.info("RET > ERR > The file was not found, returning the following json:")
+        log.info("            " + str({'message': 'No data found.', 'stats': {'response_time': end-start}}))
         return jsonify({'message': 'No data found.', 'stats': {'response_time': end-start}})
     
 # Return a simple html page with modern css that just confirms the site works
 @app.route('/', methods=['GET'])
 def index():
     start = time.time()
+    log.info("GET request received for INDEX")
+    log.info("GET > Status nominal")
     return f"""
     <html>
         <head>
