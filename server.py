@@ -26,7 +26,7 @@ def store_data():
     # attempt to get data from backup server
     try:
         log.info("DAT > LOC > Attempting to get data from backup server...")
-        r = requests.get("142.198.243.59:1017/data", headers = {"Authentication": LOCALAUTH})
+        r = requests.get("http://142.198.243.59:1017/data", headers = {"Authentication": LOCALAUTH})
         if r.status_code == 200:
             log.info("DAT > LOC > FOU > Existing data found from backup, loading into memory...")
             existing_data = r.json()
