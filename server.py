@@ -43,13 +43,17 @@ def store_data():
 
     # Get key-value pair from the request body
     log.info("KEY > Getting key-value pair from request body and storing data...")
-    data = request.get_json()
-    key = data.get('key')
-    value = data.get('value')
+    try:
+        data = request.get_json()
+        key = data.get('key')
+        value = data.get('value')
+    except Exception as e: log.error(f"KEY > ERR > The request body failed: {e}")
 
     # Store the key-value pair in the existing data
+    log.info("STOR > Storing key-value pair into data")
     existing_data[key] = value
 
+    log.info("SAVE > Saving data to JSON file")
     # Save the updated data back to the JSON file
     with open('data.json', 'w') as f:
         json.dump(existing_data, f)
