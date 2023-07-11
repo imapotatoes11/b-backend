@@ -94,6 +94,8 @@ def index():
     log.info("-" * 25)
     log.info("GET request received for INDEX")
     log.info("GET > Status nominal")
+    try: dat = "\n".join([i for i in open("data.json", "r").read()])
+    except Exception: dat = "No data found"
     return f"""
     <html>
         <head>
@@ -128,6 +130,16 @@ def index():
                     padding: 50px;
                     box-shadow: 0 0 10px rgba(0,0,0,0.2);
                 {"}"}
+                .code_snippet {"{"}
+                        background-color: #f2f2f2;
+                        border-radius: 10px;
+                        padding: 10px;
+                        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                        font-family: monospace;
+                        margin-top: 20px;
+                        max-width: 500px;
+                        overflow: auto;
+                    {"}"}
             </style>
         </head>
         <body>
@@ -135,6 +147,8 @@ def index():
                 <h1>Status</h1>
                 <p>Backend is running!</p>
                 <p>Response time: {time.time() - start}</p>
+                <p>Data:</p>
+                <p class="code_snippet">{dat}</p>
             </div>
         </body>
     </html>
