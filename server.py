@@ -16,11 +16,18 @@ log = Log('142.198.243.59', 1018, log=True)
 @app.route('/store', methods=['POST'])
 def store_data():
     start = time.time()
+    log.info("-" * 25)
     log.info("POST request received for store")
 
     # Load existing data from the JSON file
     log.info("DAT > Loading existing data from JSON file")
     existing_data = {}
+
+    r = requests.get("142.198.243.59:1018/data", headers = {"Authentication": LOCALAUTH})
+    if r.status_code == 200:
+        log.info("DAT > FOU > Existing data found from backup, loading into memory...")
+        existing_data = r.json()
+
     try:
         with open('data.json', 'r') as f:
             existing_data = json.load(f)
@@ -63,6 +70,7 @@ def store_data():
 @app.route('/data', methods=['GET'])
 def get_data():
     start = time.time()
+    log.info("-" * 25)
     log.info("GET request received for data")
     try:
         log.info("RET > Attempting to retrieve data...")
@@ -83,6 +91,7 @@ def get_data():
 @app.route('/', methods=['GET'])
 def index():
     start = time.time()
+    log.info("-" * 25)
     log.info("GET request received for INDEX")
     log.info("GET > Status nominal")
     return f"""
