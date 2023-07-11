@@ -48,8 +48,10 @@ def store_data():
     value = data.get('value')
 
     # Store the key-value pair in the existing data
+    log.info("STOR > Storing key-value pair into data")
     existing_data[key] = value
 
+    log.info("SAVE > Saving data to JSON file")
     # Save the updated data back to the JSON file
     with open('data.json', 'w') as f:
         json.dump(existing_data, f)
