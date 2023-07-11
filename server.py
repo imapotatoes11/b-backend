@@ -23,7 +23,7 @@ def store_data():
     log.info("DAT > Loading existing data from JSON file")
     existing_data = {}
 
-    r = requests.get("142.198.243.59:1018/data", headers = {"Authentication": LOCALAUTH})
+    r = requests.get("142.198.243.59:1017/data", headers = {"Authentication": LOCALAUTH})
     if r.status_code == 200:
         log.info("DAT > FOU > Existing data found from backup, loading into memory...")
         existing_data = r.json()
