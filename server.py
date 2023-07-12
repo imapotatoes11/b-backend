@@ -44,7 +44,7 @@ def store_data():
     # Get key-value pair from the request body
     log.info("KEY > Getting key-value pair from request body and storing data...")
     try:
-        data = request.get_json()
+        data = json.loads(request.data)
         key = data.get('key')
         value = data.get('value')
     except Exception as e: log.error(f"KEY > ERR > The request body failed: {e}")
