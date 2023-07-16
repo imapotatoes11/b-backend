@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-import json, time, os, requests
+import json, time, os, requests, pprint
 from log_client import Log
 
 LOCALAUTH = os.environ.get("LOCALAUTH")
@@ -103,12 +103,12 @@ def index():
     log.info("-" * 25)
     log.info("GET request received for INDEX")
     log.info("GET > Status nominal")
-    try: dat = "\n".join([i for i in open("data.json", "r").read()])
+    try: dat = "\n".join([pprint.pformat(i) for i in open("data.json", "r").read()])
     except Exception: dat = "No data found"
     return f"""
     <html>
         <head>
-            <title>Flask status</title>
+            <title>Stat: Azure Backend</title>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <style>
@@ -157,7 +157,7 @@ def index():
                 <p>Backend is running!</p>
                 <p>Response time: {time.time() - start}</p>
                 <p>Data:</p>
-                <p class="code_snippet">{dat}</p>
+                <p class="code_snippet">{dat}</p
             </div>
         </body>
     </html>
