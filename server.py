@@ -64,7 +64,7 @@ def store_data():
     # repeat the request to locally mirrored server
     log.info("BAC > Repeating request to local server...")
     try:
-        req = requests.post("http://142.198.243.59:1017/store", headers = {"Authentication": LOCALAUTH, "Content-Type": "application/json"}, data=data)
+        req = requests.post("http://142.198.243.59:1017/store", headers = {"Authentication": LOCALAUTH, "Content-Type": "application/json"}, data=json.dumps(data))
         if req.status_code == 200:
             log.info("BAC > POST > SUCC > The data was synced successfully!")
         else:
